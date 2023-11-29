@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import products from "./enum/products";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useReactToPrint } from "react-to-print";
 
 function App() {
   const [data, setData] = useState([]);
+  const ref = useRef();
 
   const handleAddProduct = (value) => {
     if (!value) return;
@@ -30,11 +32,30 @@ function App() {
     }
   };
 
+  const handleRemove = (id) => {
+    const newData = [...data];
+    setData(newData.filter((item) => item.id !== id));
+  };
+
+  const total = (data || []).reduce(
+    (acc, curr, v) => ({
+      items: v + 1,
+      qty: acc.qty + curr.qty,
+      price: acc.price + curr.price * curr.qty,
+      subTotal: acc.price + curr.price * curr.qty,
+    }),
+    { items: 0, subTotal: 0, qty: 0, price: 0 }
+  );
+
+  const handlePrint = useReactToPrint({
+    content: () => ref.current,
+  });
+
   return (
-    <section className="bg-gradient-to-t from-indigo-400/50 to-blue-600/70">
+    <section ref={ref} className="bg-gradient-to-t from-indigo-400/50 to-blue-600/70">
       <div className="w-4/5 mx-auto">
         <div className="h-screen w-full flex items-center ">
-          <div className="grid grid-cols-12 bg-white shadow-md overflow-hidden rounded-xl w-full">
+          <div  className="grid grid-cols-12 bg-white shadow-md overflow-hidden rounded-xl w-full">
             <div className="lg:col-span-5 col-span-12 lg:order-2 order-1 bg-rose-100/5 border-l px-3">
               <h1 className="py-3 px-5 border-b font-bold text-xl mb-2 text-black/70">
                 Point of Sale
@@ -58,7 +79,10 @@ function App() {
                           <td className="border p-2">{item.price}</td>
                           <td className="border p-2">{item.qty}</td>
                           <td className="border p-2">{item.total}</td>
-                          <td className="border p-2 w-[10px]">
+                          <td
+                            className="border p-2 w-[10px]"
+                            onClick={() => handleRemove(item.id)}
+                          >
                             <AiOutlineDelete />
                           </td>
                         </tr>
@@ -79,13 +103,22 @@ function App() {
                   </tbody>
                 </table>
                 <div className="my-3 flex justify-between items-center p-5 border rounded-md shadow">
-                  <div>Tax</div>
-                  <div>Discount</div>
-                  <div>Grand Total</div>
+                  <div>
+                    <small>Total Items</small>
+                    <h1 className="font-bold">{total.items}</h1>
+                  </div>
+                  <div>
+                    <small>Total Qty</small>
+                    <h1 className="font-bold">{total.qty}</h1>
+                  </div>
+                  <div>
+                    <small> Grand Total</small>
+                    <h1 className="font-bold">{total.subTotal}</h1>
+                  </div>
                 </div>
               </div>
               <div>
-                <button className="text-white font-bold bg-gradient-to-r from-cyan-500 w-full block to-blue-500 px-4 py-3 rounded-sm">
+                <button onClick={handlePrint} className="text-white font-bold bg-gradient-to-r from-cyan-500 w-full block to-blue-500 px-4 py-3 rounded-sm">
                   Submit
                 </button>
               </div>
