@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import products from "./enum/products";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useReactToPrint } from "react-to-print";
+import { useEffect } from "react";
 
 function App() {
   const [data, setData] = useState([]);
@@ -52,10 +53,13 @@ function App() {
   });
 
   return (
-    <section ref={ref} className="bg-gradient-to-t from-indigo-400/50 to-blue-600/70">
+    <section
+      ref={ref}
+      className="bg-gradient-to-t from-indigo-400/50 to-blue-600/70"
+    >
       <div className="w-4/5 mx-auto">
         <div className="h-screen w-full flex items-center ">
-          <div  className="grid grid-cols-12 bg-white shadow-md overflow-hidden rounded-xl w-full">
+          <div className="grid grid-cols-12 bg-white shadow-md overflow-hidden rounded-xl w-full">
             <div className="lg:col-span-5 col-span-12 lg:order-2 order-1 bg-rose-100/5 border-l px-3">
               <h1 className="py-3 px-5 border-b font-bold text-xl mb-2 text-black/70">
                 Point of Sale
@@ -75,7 +79,7 @@ function App() {
                     {data.length > 0 ? (
                       data.map((item, idx) => (
                         <tr key={idx} className="text-center hover:bg-gray-100">
-                          <td className="text-start border p-2">{item.name}</td>
+                          <td className="text-start border p-2">{item.userId}</td>
                           <td className="border p-2">{item.price}</td>
                           <td className="border p-2">{item.qty}</td>
                           <td className="border p-2">{item.total}</td>
@@ -118,7 +122,10 @@ function App() {
                 </div>
               </div>
               <div>
-                <button onClick={handlePrint} className="text-white font-bold bg-gradient-to-r from-cyan-500 w-full block to-blue-500 px-4 py-3 rounded-sm">
+                <button
+                  onClick={handlePrint}
+                  className="text-white font-bold bg-gradient-to-r from-cyan-500 w-full block to-blue-500 px-4 py-3 rounded-sm"
+                >
                   Submit
                 </button>
               </div>
@@ -129,7 +136,7 @@ function App() {
               </h1>
 
               <div className="grid grid-cols-4 gap-2 p-3 lg:h-[80vh] overflow-auto">
-                {products.map((item, idx) => (
+                {(products || []).map((item, idx) => (
                   <div
                     key={idx}
                     className="relative group/item shadow border h-40 w-full rounded-md overflow-hidden"
